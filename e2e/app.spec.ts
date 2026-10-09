@@ -51,12 +51,16 @@ test("cabeceras de seguridad y CSP con nonce", async ({ request }) => {
 });
 
 test("un visitante anónimo solo ve lo público", async ({ request }) => {
-  expect((await request.get("/c/caminapiedras")).status()).toBe(200);
+  expect((await request.get("/c/la-cripta-del-rey-olvidado")).status()).toBe(200);
   expect((await request.get("/c/nacidos-de-la-bruma")).status()).toBe(404); // campaña privada
-  const dmOnly = await request.get("/c/caminapiedras/p/agentes-de-los-ojos-de-palah"); // solo máster
+  const dmOnly = await request.get("/c/la-cripta-del-rey-olvidado/p/secretos-del-valle"); // solo máster
   await expectNotFound(dmOnly);
-  expect(await dmOnly.text()).not.toContain("Agentes de los Ojos de Palah</h1>");
-  await expectNotFound(await request.get("/c/la-cripta-del-rey-olvidado/p/trasfondo-de-iker")); // de otro jugador
+  expect(await dmOnly.text()).not.toContain("Encuentros aleatorios");
+  await expectNotFound(await request.get("/c/la-cripta-del-rey-olvidado/p/trasfondo-de-lyra")); // de otro jugador
+  // Página pública: se ve, pero sin el bloque de máster
+  const world = await (await request.get("/c/la-cripta-del-rey-olvidado/p/mundo")).text();
+  expect(world).toContain("El valle de Brumahonda");
+  expect(world).not.toContain("El rey no está muerto");
   const chat = await request.get("/api/campaigns/00000000-0000-0000-0000-000000000000/chat?channel=group");
   expect(chat.status()).toBe(401);
 });
@@ -146,10 +150,10 @@ test("chat de grupo y chat privado", async ({ browser }) => {
   await expect(gm.getByText("Mi personaje es un espía")).toBeVisible();
 
   // Alguien de fuera no puede leer el chat ni pidiéndolo directamente a la API
-  const iker = await newUser(browser);
-  await login(iker, "iker");
+  const outsider = await newUser(browser);
+  await login(outsider, "lyra");
   const campaignId = await campaignIdOf(gm);
-  expect((await iker.request.get(`/api/campaigns/${campaignId}/chat?channel=group`)).status()).toBe(403);
+  expect((await outsider.request.get(`/api/campaigns/${campaignId}/chat?channel=group`)).status()).toBe(403);
 });
 
 /** Id de la campaña actual leyendo el formulario oculto de ajustes (solo para tests). */
@@ -213,7 +217,7 @@ test("límite de intentos de login", async ({ browser }) => {
   const attacker = await newUser(browser);
   for (let i = 0; i < 9; i++) {
     await attacker.goto("/login");
-    await attacker.fill("#identifier", "val");
+    await attacker.fill("#identifier", "tomas");
     await attacker.fill("#password", `incorrecta-${i}`);
     await attacker.getByRole("button", { name: "Entrar" }).click();
     await expect(attacker.locator("form [role=alert]")).toBeVisible();
@@ -222,12 +226,13 @@ test("límite de intentos de login", async ({ browser }) => {
 });
 
 test("árbol de navegación: ruta abierta y búsqueda", async ({ browser }) => {
-  const iker = await newUser(browser);
-  await login(iker, "iker");
-  await iker.goto("/c/caminapiedras/p/kaiana");
-  const nav = iker.locator("aside nav");
-  await expect(nav.getByRole("button", { name: "Contraer Personajes Principales" })).toBeVisible();
-  await expect(nav.getByRole("link", { name: /^Kaiana/ }).first()).toHaveAttribute("aria-current", "page");
-  await nav.getByRole("searchbox").fill("anguila");
-  await expect(nav.getByRole("link", { name: /Anguila Aérea Mayor/ })).toBeVisible();
+  const lyra = await newUser(browser);
+  await login(lyra, "lyra");
+  await lyra.goto("/c/la-cripta-del-rey-olvidado/p/aldea-de-roble");
+  const nav = lyra.locator("aside nav");
+  await expect(nav.getByRole("button", { name: "Contraer Lugares" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: /^Aldea de Roble/ })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: /Secretos del valle/ })).toHaveCount(0); // solo máster
+  await nav.getByRole("searchbox").fill("posad");
+  await expect(nav.getByRole("link", { name: /Brann el posadero/ })).toBeVisible();
 });

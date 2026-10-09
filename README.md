@@ -1,69 +1,86 @@
-# Have a Long Rest
+# 🌙 Have a Long Rest
 
-Red social para campañas de rol: los usuarios exploran campañas activas, se unen (o crean la suya) y cada
-campaña tiene una wiki editable por su máster, con páginas visibles según el rol de cada jugador, tema
-visual propio, chat de grupo y chats privados entre miembros. Cada usuario tiene un perfil público.
+Plataforma web para campañas de rol de mesa. Los jugadores descubren campañas activas y se unen a
+ellas; cada campaña tiene su propia wiki, que su máster edita desde el navegador, y un chat para la mesa.
 
-Stack: **Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · Postgres + Drizzle ORM**. Pensado para
-desplegarse en Vercel. Arquitectura y decisiones de diseño en [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md).
+## Qué se puede hacer
+
+- **Explorar campañas** públicas, buscarlas por nombre o sistema de juego y unirse (entrada libre o con
+  solicitud que aprueba el máster). Se puede salir en cualquier momento.
+- **Crear tu propia campaña** y dirigirla: pestañas y subpáginas en árbol, editor Markdown con vista
+  previa, subida de imágenes y portada.
+- **Control de lo que ve cada uno**: páginas públicas, solo para miembros, para jugadores concretos o
+  solo para el máster, y bloques secretos dentro de una página:
+
+  ```markdown
+  :::dm
+  Esto solo lo ve el equipo de máster.
+  :::
+  ```
+
+- **Enlaces entre páginas** al estilo Obsidian: `[[Otra página]]`, `[[Página|texto]]`, `[[Página#Sección]]`.
+- **Temas visuales** por campaña: predefinidos o uno propio con rueda de color.
+- **Chat** de la campaña: canal general y conversaciones privadas entre miembros.
+- **Perfil** de usuario: foto, descripción, juegos favoritos y perfil público.
+- **Roles**: máster, co-máster y jugador.
+
+## Stack
+
+[Next.js 16](https://nextjs.org) (App Router) · TypeScript · Tailwind CSS 4 · PostgreSQL con
+[Drizzle ORM](https://orm.drizzle.team) · pensado para [Vercel](https://vercel.com).
+
+En desarrollo no hace falta instalar Postgres: se usa [PGlite](https://pglite.dev), un Postgres embebido
+que guarda los datos en `.data/`.
 
 ## Puesta en marcha
 
-Requisitos: Node 20.12+ (probado con Node 24). No hace falta instalar Postgres: en local se usa
-[PGlite](https://pglite.dev), un Postgres embebido que guarda los datos en `.data/pglite`.
+Requisitos: Node.js 20.12 o superior.
 
 ```bash
 npm install
-npm run db:reset   # crea la base de datos local y carga los datos de demo
-npm run dev        # http://localhost:3000 (aplica migraciones pendientes al arrancar)
+npm run db:reset   # crea la base de datos local con datos de demostración
+npm run dev        # http://localhost:3000
 ```
 
-### Usuarios de demo
+Usuarios de demostración (contraseña `longrest`):
 
-Contraseña de todos: `longrest`
-
-| Usuario | Para probar |
+| Usuario | Rol en la demo |
 | --- | --- |
-| `dm` | Máster de **Caminapiedras** (importada de la wiki antigua) y de la campaña privada *Nacidos de la Bruma* |
-| `iker`, `salva`, `nico`… | Jugadores de Caminapiedras. `iker` tiene un chat privado con `dm`, juega en *La Cripta* y ve su página restringida |
-| `ana` | Máster de *La Cripta del Rey Olvidado* (entrada libre, tema personalizado) y co-máster de *Nacidos de la Bruma* |
-| `bruno` | Usuario sin campañas: prueba a solicitar entrada o unirte |
+| `ana` | Máster de *La Cripta del Rey Olvidado* (pública, entrada libre, tema personalizado) |
+| `lyra`, `tomas` | Jugadores de *La Cripta*; `lyra` tiene una página privada y un chat privado con `ana` |
+| `dm` | Máster de *Nacidos de la Bruma* (campaña privada) |
+| `bruno` | Usuario sin campañas: prueba a unirte a una |
+
+> `npm run dev` compila cada página la primera vez y no precarga enlaces. Para ver la velocidad real:
+> `npm run build && npm start`.
 
 ## Scripts
 
-| Comando | Qué hace |
+| Comando | Descripción |
 | --- | --- |
-| `npm run dev` | Servidor de desarrollo (ejecuta antes las migraciones) |
-| `npm run build` / `npm start` | Build y servidor de producción |
-| `npm test` | Tests unitarios (permisos, Markdown, colores, validaciones de seguridad) |
-| `npm run test:e2e` | Tests end-to-end con Playwright contra un build de producción (base de datos propia en `.data/pglite-e2e`). La primera vez: `npx playwright install chromium`, o usa tu navegador con `PW_CHANNEL=msedge` / `PW_CHANNEL=chrome` |
-| `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
-| `npm run check` | Lint + tipos + tests unitarios (lo mismo que comprueba la CI) |
-| `npm run db:generate` | Genera una migración SQL tras cambiar `lib/db/schema.ts` |
-| `npm run db:migrate` | Aplica migraciones a la base de datos configurada |
-| `npm run db:seed` | Borra y recarga los datos de demo (solo en local salvo `-- --force`) |
-| `npm run db:reset` | Borra la base de datos local (PGlite) y la recrea con la demo |
-
-> PGlite no admite varios procesos a la vez: para `db:seed` o `db:reset` para antes el servidor de desarrollo.
->
-> `npm run dev` compila cada página la primera vez que se visita y no hace prefetch, así que navegar es
-> más lento que en producción. Para probar la velocidad real: `npm run build && npm start`.
-
-## Integración continua
-
-`.github/workflows/ci.yml` ejecuta en cada push a `main` y en cada pull request: lint, tipos, tests
-unitarios, `npm audit` de dependencias de producción, build y tests end-to-end. Dependabot propone
-actualizaciones semanales. Medidas de seguridad: ver [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md#seguridad).
+| `npm run dev` | Servidor de desarrollo (aplica migraciones al arrancar) |
+| `npm run build` · `npm start` | Build y servidor de producción |
+| `npm run check` | Lint, tipos y tests unitarios |
+| `npm test` | Tests unitarios (Vitest) |
+| `npm run test:e2e` | Tests end-to-end (Playwright) contra un build de producción, con su propia base de datos. La primera vez: `npx playwright install chromium` |
+| `npm run db:generate` | Genera una migración tras cambiar `lib/db/schema.ts` |
+| `npm run db:migrate` | Aplica las migraciones pendientes |
+| `npm run db:seed` | Recarga los datos de demostración (borra la base de datos local) |
+| `npm run db:reset` | Borra la base de datos local y la recrea |
 
 ## Despliegue en Vercel
 
-1. Crea una base de datos Postgres (Neon o Supabase, por ejemplo, ambos con plan gratuito) y copia su URL de
-   conexión (la del *pooler* si la ofrece).
-2. En Vercel, importa el repositorio y añade las variables de entorno:
-   - `DATABASE_URL`: la URL de Postgres.
-   - `BLOB_READ_WRITE_TOKEN`: crea un almacén de **Vercel Blob** en el proyecto (se añade solo).
-3. Despliega. El script `vercel-build` aplica las migraciones antes de compilar.
-4. (Opcional) Carga la demo en esa base de datos desde tu equipo:
-   `DATABASE_URL=… npm run db:seed -- --force`. **Borra todo lo que haya.**
+1. Crea una base de datos PostgreSQL (por ejemplo en [Neon](https://neon.tech) o
+   [Supabase](https://supabase.com)) y copia su URL de conexión, la del *pooler* si la ofrece.
+2. Importa el repositorio en Vercel y define las variables de entorno (ver [.env.example](.env.example)):
+   - `DATABASE_URL`: la URL de PostgreSQL.
+   - `BLOB_READ_WRITE_TOKEN`: crea un almacén de **Vercel Blob** en el proyecto para las imágenes.
+3. Despliega. Las migraciones se aplican solas durante el build (`vercel-build`).
 
-Variables de ejemplo en [.env.example](.env.example).
+## Documentación
+
+- [Arquitectura, modelo de datos y permisos](docs/ARQUITECTURA.md)
+- [Medidas de seguridad](docs/ARQUITECTURA.md#seguridad) y [cómo informar de una vulnerabilidad](SECURITY.md)
+
+Cada push y pull request pasa por la integración continua: lint, tipos, tests unitarios, auditoría de
+dependencias, build y tests end-to-end.

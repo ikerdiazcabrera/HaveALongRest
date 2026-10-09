@@ -1,6 +1,4 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# ─── Dependencias y builds ─────────────────────────────────────────────────────
 /node_modules
 /.pnp
 .pnp.*
@@ -9,43 +7,74 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
-# testing
-/coverage
-
-# next.js
 /.next/
 /out/
-
-# production
 /build
+/coverage
+*.tsbuildinfo
+next-env.d.ts
+.eslintcache
 
-# misc
-.DS_Store
+# ─── Secretos y entorno ────────────────────────────────────────────────────────
+# Variables de entorno (DATABASE_URL, BLOB_READ_WRITE_TOKEN…). Solo se sube la plantilla.
+.env*
+!.env.example
 *.pem
+*.key
+*.p12
+*.pfx
+# Configuración local de Vercel (contiene ids del proyecto y de la cuenta)
+.vercel
 
-# debug
+# ─── Datos locales ─────────────────────────────────────────────────────────────
+# Base de datos PGlite de desarrollo/tests e imágenes subidas en local
+/.data
+*.sql.gz
+*.dump
+
+# ─── Contenido privado de campañas ─────────────────────────────────────────────
+# Datos reales de la mesa (contenido de máster, nombres de jugadores) e importador privado
+/scripts/private/
+# Imágenes de campañas privadas (retratos, capturas, logos con derechos de terceros)
+/public/content/
+
+# ─── Notas personales ──────────────────────────────────────────────────────────
+README.privado.md
+*.privado.md
+/notas/
+
+# ─── Asistentes de IA (Claude Code y similares) ────────────────────────────────
+# AGENTS.md lo regenera `next dev` automáticamente
+AGENTS.md
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+.cursor/
+.cursorrules
+.windsurfrules
+.aider*
+.github/copilot-instructions.md
+
+# ─── Editores y sistema operativo ──────────────────────────────────────────────
+.vscode/
+.idea/
+*.code-workspace
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Logs ──────────────────────────────────────────────────────────────────────
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
-.env*.local
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# datos locales (PGlite + subidas en desarrollo)
-/.data
-!.env.example
-
-# Playwright
+# ─── Tests end-to-end ──────────────────────────────────────────────────────────
 /test-results
 /playwright-report
+/blob-report
 /playwright/.cache
