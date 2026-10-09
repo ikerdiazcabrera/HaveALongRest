@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+/* ── Tokens ──────────────────────────────────────────────────────────────────
+   La paleta base es la de la plataforma ("taberna"). Cada campaña puede
+   sobrescribir el fondo y el color de acento con [data-theme="…"]. */
+
+:root {
+  color-scheme: dark;
+
+  --bg-gradient: radial-gradient(ellipse at top, #3a2416 0%, transparent 60%),
+    linear-gradient(160deg, #1b120d 0%, #15111c 55%, #0d0c14 100%);
+  --panel: rgba(16, 12, 20, 0.72);
+  --card: rgba(255, 255, 255, 0.05);
+  --card-hover: rgba(255, 255, 255, 0.09);
+  --line: rgba(255, 255, 255, 0.12);
+
+  --ink: #f4efe6;
+  --ink-2: rgba(244, 239, 230, 0.8);
+  --ink-3: rgba(244, 239, 230, 0.58);
+  --ink-4: rgba(244, 239, 230, 0.38);
+
+  --accent: #e0a64b;
+  --accent-2: #f3c97a;
+  --accent-dim: #8f5d1c;
+  --on-accent: #1d1307;
+}
+
+[data-theme="caminapiedras"] {
+  --bg-gradient: linear-gradient(135deg, #1e3a8a 0%, #065f46 50%, #581c87 100%);
+  --accent: #60a5fa;
+  --accent-2: #93c5fd;
+  --accent-dim: #3b82f6;
+  --on-accent: #0b1220;
+}
+
+[data-theme="odium"] {
+  --bg-gradient: linear-gradient(135deg, #6b0010 0%, #2a0040 50%, #5a4a00 100%);
+  --accent: #d8c41a;
+  --accent-2: #f0d840;
+  --accent-dim: #a89015;
+  --on-accent: #1a1400;
+}
+
+[data-theme="honor"] {
+  --bg-gradient: linear-gradient(135deg, #0d4a60 0%, #1a7a96 50%, #5a4800 100%);
+  --accent: #5ec4e2;
+  --accent-2: #c6e3e7;
+  --accent-dim: #1a7a96;
+  --on-accent: #04161d;
+}
+
+[data-theme="cultivacion"] {
+  --bg-gradient: linear-gradient(135deg, #2a3820 0%, #1a5a56 50%, #4a2a18 100%);
+  --accent: #3db5ae;
+  --accent-2: #7fd6d0;
+  --accent-dim: #1d5f5c;
+  --on-accent: #04201e;
+}
+
+[data-theme="sangre-espectral"] {
+  --bg-gradient: linear-gradient(135deg, #3a0005 0%, #91040a 50%, #4a4a4a 100%);
+  --accent: #e05060;
+  --accent-2: #f08a95;
+  --accent-dim: #91040a;
+  --on-accent: #1f0004;
+}
+
+[data-theme="ojos-de-palah"] {
+  --bg-gradient: linear-gradient(135deg, #1e4020 0%, #4a7a4e 50%, #6a5530 100%);
+  --accent: #d0b774;
+  --accent-2: #e8d090;
+  --accent-dim: #a88a50;
+  --on-accent: #1c1606;
+}
+
+@theme inline {
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-dim: var(--accent-dim);
+  --color-on-accent: var(--on-accent);
+  --color-panel: var(--panel);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-cinzel), Georgia, serif;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+
+body {
+  min-height: 100dvh;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.themed-bg {
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+
+/* ── Componentes ──────────────────────────────────────────────────────────── */
+
+@layer components {
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold whitespace-nowrap transition disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary { @apply bg-accent text-on-accent hover:brightness-110; }
+  .btn-secondary { @apply border border-line bg-card text-ink hover:bg-card-hover; }
+  .btn-ghost { @apply text-ink-2 hover:bg-card-hover hover:text-ink; }
+  .btn-danger { @apply border border-red-400/40 bg-red-500/10 text-red-200 hover:bg-red-500/20; }
+  .btn-sm { @apply rounded-md px-2.5 py-1 text-xs; }
+
+  .input {
+    @apply w-full rounded-lg border border-line bg-black/30 px-3 py-2 text-sm text-ink outline-none transition placeholder:text-ink-4 focus:border-accent focus:ring-2 focus:ring-accent/25;
+  }
+  .label { @apply mb-1.5 block text-xs font-semibold tracking-wider text-accent-2 uppercase; }
+  .hint { @apply mt-1 text-xs text-ink-4; }
+
+  .panel { @apply rounded-2xl border border-line bg-panel backdrop-blur-md; }
+  .card { @apply rounded-xl border border-line bg-card; }
+
+  .badge { @apply inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] leading-4 font-semibold; }
+  .badge-amber { @apply border-amber-400/30 bg-amber-400/10 text-amber-300; }
+  .badge-red { @apply border-red-400/30 bg-red-400/10 text-red-300; }
+  .badge-green { @apply border-emerald-400/30 bg-emerald-400/10 text-emerald-300; }
+  .badge-blue { @apply border-sky-400/30 bg-sky-400/10 text-sky-300; }
+  .badge-neutral { @apply border-line bg-card text-ink-3; }
+  .badge-accent { @apply border-accent/40 bg-accent/10 text-accent-2; }
+}
+
+/* ── Contenido Markdown de las páginas ────────────────────────────────────── */
+
+.markdown { color: var(--ink-2); line-height: 1.75; overflow-wrap: break-word; }
+.markdown > :first-child { margin-top: 0; }
+.markdown h1, .markdown h2, .markdown h3, .markdown h4 { color: var(--ink); scroll-margin-top: 5rem; }
+.markdown h1 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; margin: 2rem 0 0.75rem; }
+.markdown h2 {
+  font-family: var(--font-display);
+  color: var(--accent-2);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 1.8rem 0 0.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--line);
+}
+.markdown h3 { color: var(--accent-2); font-size: 1.05rem; font-weight: 600; margin: 1.4rem 0 0.5rem; }
+.markdown h4 { font-weight: 600; margin: 1.2rem 0 0.4rem; }
+.markdown p { margin: 0.75rem 0; }
+.markdown strong { color: var(--ink); font-weight: 700; }
+.markdown em { color: var(--ink); }
+.markdown a { color: var(--accent-2); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent-2) 40%, transparent); text-underline-offset: 3px; }
+.markdown a:hover { text-decoration-color: var(--accent-2); }
+.markdown a.missing { color: #fca5a5; text-decoration-style: dashed; }
+.markdown ul, .markdown ol { margin: 0.6rem 0; padding-left: 1.5rem; }
+.markdown ul { list-style: disc; }
+.markdown ol { list-style: decimal; }
+.markdown li { margin: 0.25rem 0; }
+.markdown li::marker { color: var(--accent); }
+.markdown blockquote { border-left: 3px solid var(--accent-dim); padding: 0.1rem 0 0.1rem 1rem; margin: 1rem 0; color: var(--ink-3); font-style: italic; }
+.markdown hr { border: none; border-top: 1px solid var(--line); margin: 1.75rem 0; }
+.markdown code { background: rgba(255, 255, 255, 0.08); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em; color: var(--accent-2); }
+.markdown pre { background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line); border-radius: 10px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+.markdown pre code { background: none; padding: 0; color: var(--ink-2); }
+.markdown img { max-width: 100%; max-height: 70vh; width: auto; height: auto; border-radius: 10px; border: 1px solid var(--line); margin: 1.25rem 0; }
+.markdown .table-wrap { overflow-x: auto; margin: 1rem 0; border: 1px solid var(--line); border-radius: 10px; }
+.markdown table { width: 100%; border-collapse: collapse; font-size: 0.92em; }
+.markdown th { text-align: left; color: var(--accent-2); background: rgba(255, 255, 255, 0.04); font-weight: 600; }
+.markdown th, .markdown td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.markdown tr:last-child td { border-bottom: none; }
+
+.dm-block {
+  margin: 1.25rem 0;
+  padding: 0.9rem 1.1rem;
+  border-left: 3px solid #b91c1c;
+  border-radius: 0 10px 10px 0;
+  background: rgba(127, 29, 29, 0.18);
+}
+.dm-block > :last-child { margin-bottom: 0; }

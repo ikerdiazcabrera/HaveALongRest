@@ -1,36 +1,55 @@
 {
-  "name": "cosmere-wiki",
+  "name": "have-a-long-rest",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
+    "predev": "tsx scripts/migrate.ts",
     "dev": "next dev",
     "build": "next build",
+    "vercel-build": "tsx scripts/migrate.ts && next build",
     "start": "next start",
     "lint": "eslint",
-    "push": "./gitupdate.sh",
-    "watch": "python3 watcher.py"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:reset": "tsx scripts/reset.ts && tsx scripts/migrate.ts && tsx scripts/seed.ts",
+    "test:e2e": "playwright test",
+    "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.94.0",
-    "bcryptjs": "^3.0.3",
-    "gray-matter": "^4.0.3",
-    "next": "16.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-markdown": "^10.1.0",
-    "rehype-raw": "^7.0.0"
+    "@electric-sql/pglite": "0.5.8",
+    "@vercel/blob": "2.8.0",
+    "bcryptjs": "3.0.3",
+    "drizzle-orm": "0.45.3",
+    "github-slugger": "2.0.0",
+    "next": "16.3.8",
+    "postgres": "3.4.9",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-markdown": "10.1.0",
+    "rehype-slug": "6.0.0",
+    "remark-gfm": "4.0.1",
+    "server-only": "0.0.1",
+    "zod": "4.6.5"
   },
   "devDependencies": {
-    "@tailwindcss/cli": "^4.1.18",
-    "@tailwindcss/postcss": "^4",
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "4.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "autoprefixer": "^10.4.24",
+    "drizzle-kit": "0.31.11",
     "eslint": "^9",
-    "eslint-config-next": "16.1.6",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.18",
-    "typescript": "^5"
+    "eslint-config-next": "16.3.8",
+    "tailwindcss": "4.3.3",
+    "tsx": "4.23.15",
+    "typescript": "^5",
+    "vitest": "4.1.11"
+  },
+  "engines": {
+    "node": ">=20.12"
   }
 }

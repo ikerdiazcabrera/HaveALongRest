@@ -40,3 +40,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# datos locales (PGlite + subidas en desarrollo)
+/.data
+!.env.example
+
+# Playwright
+/test-results
+/playwright-report
+/playwright/.cache
